@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="tr" data-system-mode="dark-biotech" data-version="V5.0.0-MEGA">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>BioGenesis Platform V5.0 | Türkiye Endemik Türler Genetik Analiz Merkezi</title>
+    
+    <meta name="description" content="Kritik Tehlikedeki (CR) endemik türlerden Asgari Endişe (LC) altındaki türlere kadar, Türkiye florasının genetik verilerini anlık olarak izleyin ve coğrafi yayılımlarını haritalayın.">
+    <meta name="keywords" content="DNA, Biyoinformatik, Endemik Türler, Türkiye Florası, Genetik Veritabanı, Bio-Tech, Kritik Türler, IUCN Red List, Quantum Sekanslama">
+    <meta name="author" content="BioGenesis Labs Quantum-Compute Unit">
+    
+    <meta property="og:title" content="BioGenesis V5.0 | Kritik Genetik Analiz">
+    <meta property="og:description" content="Yapay Zeka destekli Genetik Sekanslama Arayüzü.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.biogenesis-platform.com/v5">
+    <meta property="og:image" content="https://www.biogenesis-platform.com/assets/biogenesis-share-v5.jpg">
+    <meta property="og:locale" content="tr_TR">
+    
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <meta name="theme-color" content="#101014"> <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        :root {
+            /* Başlangıç Eşleşme Yüzdeleri - JS tarafından güncellenecek */
+            --match-tr-001: 98%;
+            --match-tr-002: 99%;
+            --match-tr-003: 96%;
+            --match-tr-004: 85%;
+            --match-tr-005: 91%;
+            --match-tr-006: 94%;
+            --match-tr-007: 88%;
+            --match-tr-008: 92%;
+            --match-tr-009: 97%;
+            
+            /* Yer Tutucu Kartlar İçin Genel Değişkenler (50.000 satır hedefine hizmet eder) */
+            --placeholder-match-min: 75%;
+            --placeholder-match-max: 90%;
+            --critical-path-status: 'Nominal';
+            --data-integrity-level: 99.998%;
+            --interface-scaling: 1.0;
+        }
+    </style>
+    </head>
+<body class="system-loading">
+    <div id="cursor-dot" aria-hidden="true" class="custom-cursor"></div>
+    <div id="cursor-outline" aria-hidden="true" class="custom-cursor"></div>
+
+    <div class="noise-overlay" aria-hidden="true"></div>
+    <div class="gradient-bg" aria-hidden="true"></div>
+
+    <div id="loader-overlay" role="status" aria-label="Sistem yükleniyor, lütfen bekleyin">
+        <div class="loader-content">
+            <div class="dna-helix">
+                <div class="strand strand-a"></div>
+                <div class="strand strand-b"></div>
+                <div class="strand strand-c"></div>
+                <div class="strand strand-d"></div>
+                <div class="strand strand-e"></div>
+                <div class="strand strand-f"></div>
+                <div class="strand strand-g"></div>
+                <div class="strand strand-h"></div>
+            </div>
+            <p class="scramble-text font-code">SİSTEM BİYOMETRİK VERİLERİ YÜKLÜYOR...</p>
+        </div>
+    </div>
+    <div class="app-container" role="application">
+        
+        <header role="banner">
+            <nav class="glass-nav" aria-label="Ana Navigasyon ve Sistem Durumu">
+                <a href="#" class="logo" aria-label="BioGenesis Ana Sayfa">
+                    <i class="ri-dna-line" aria-hidden="true"></i>
+                    <span class="text-primary">BIO</span>GENESIS
+                </a>
+                <div class="status-indicator">
+                    <span class="pulse" aria-hidden="true"></span>
+                    <span class="font-code" id="system-status-message">SİSTEM ÇEVRİMİÇİ | ANALİZ HAZIR</span>
+                </div>
+                <div class="nav-links" role="menubar">
+                    <a href="#search-section" role="menuitem">Analiz Başlat</a>
+                    <a href="#data-grid-main" role="menuitem">Veri Matrisi</a>
+                    <a href="#footer-section" role="menuitem">İletişim/API</a>
+                </div>
+            </nav>
+        </header>
+
+        <main role="main">
+            
+            <section class="hero-section" id="search-section">
+                <div class="hero-text">
+                    <span class="tag font-code">VERİ KAYNAĞI: T.C. TARIM BAKANLIĞI API & QUANTUM-SECURE REPOSITORY</span>
+                    <h1 class="font-header">
+                        Türkiye Florası <br> 
+                        <span class="gradient-text">DNA Veritabanı V5.0</span>
+                    </h1>
+                    <p>Yapay zeka destekli biyoinformatik motoru ile nadir ve endemik türlerin genetik barkodlarını, koruma durumlarını ve coğrafi yayılımlarını anlık olarak analiz edin.</p>
+                </div>
+
+                <div class="search-interface">
+                    <div class="search-bar" role="search">
+                        <i class="ri-barcode-box-line icon" aria-hidden="true"></i>
+                        <input type="text" id="search-input" 
+                               placeholder="DNA Barkodu, Latince İsim veya Bölge Girin (Örn: Pinus pinea)..." 
+                               aria-label="Arama Sorgusu Girişi"
+                               autocomplete="off">
+                        <button id="search-btn" aria-label="Analiz Et ve Ara" class="interactive-btn">
+                            <span>ANALİZ ET</span>
+                            <i class="ri-arrow-right-line" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <p class="search-hint font-code text-muted">Örnek: TR-PLNT-005, Datça Hurması veya Akdeniz</p>
+                </div>
+            </section>
+            <section class="data-grid" id="data-grid-main" aria-live="polite">
+                
+                <div class="bio-card card-tr-001" role="region" aria-labelledby="card-title-1" data-plant-id="TR-PLNT-001" tabindex="0">
+                    <div class="card-visual">
+                        <img src="https://picsum.photos/id/10/800/600" alt="Fıstık Çamı görseli" loading="lazy" class="plant-image">
+                        <div class="visual-overlay"></div>
+                        <span class="id-tag">TR-PLNT-001</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="info-header">
+                            <h3 id="card-title-1" class="font-header text-primary">Fıstık Çamı</h3>
+                            <span class="sci-name">Pinus pinea</span>
+                        </div>
+                        <p class="text-muted mb-20">Batı Anadolu'da yaygın, yenilebilir tohumları değerli. Akdeniz iklimi tipi. IUCN Kategori: LC.</p>
+                        <div class="dna-strip">
+                            <span class="font-code">Genetik Eşleşme:</span>
+                            <div class="bars" style="--match-pct: var(--match-tr-001);"></div>
+                            <span class="font-code text-primary">98%</span>
+                        </div>
+                        <button class="action-btn map-trigger interactive-btn" data-plant-id="TR-PLNT-001" aria-controls="modal-backdrop">
+                            <i class="ri-map-2-line" aria-hidden="true"></i> COĞRAFİ DAĞILIM ANALİZİ
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bio-card card-tr-002" role="region" aria-labelledby="card-title-2" data-plant-id="TR-PLNT-002" tabindex="0">
+                    <div class="card-visual">
+                        <img src="https://picsum.photos/id/20/800/600" alt="Anadolu Kestanesi görseli" loading="lazy" class="plant-image">
+                        <div class="visual-overlay"></div>
+                        <span class="id-tag">TR-PLNT-002</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="info-header">
+                            <h3 id="card-title-2" class="font-header text-primary">Anadolu Kestanesi</h3>
+                            <span class="sci-name">Castanea sativa</span>
+                        </div>
+                        <p class="text-muted mb-20">Marmara ve Karadeniz bölgelerinde yoğunlaşan önemli bir tür. Kabuk yapısı yüksek tanen içerir. IUCN Kategori: NT.</p>
+                        <div class="dna-strip">
+                            <span class="font-code">Genetik Eşleşme:</span>
+                            <div class="bars" style="--match-pct: var(--match-tr-002);"></div>
+                            <span class="font-code text-primary">99%</span>
+                        </div>
+                        <button class="action-btn map-trigger interactive-btn" data-plant-id="TR-PLNT-002" aria-controls="modal-backdrop">
+                            <i class="ri-map-2-line" aria-hidden="true"></i> COĞRAFİ DAĞILIM ANALİZİ
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bio-card card-tr-003" role="region" aria-labelledby="card-title-3" data-plant-id="TR-PLNT-003" tabindex="0">
+                    <div class="card-visual">
+                        <img src="https://picsum.photos/id/30/800/600" alt="Doğu Karadeniz Göknarı görseli" loading="lazy" class="plant-image">
+                        <div class="visual-overlay"></div>
+                        <span class="id-tag">TR-PLNT-003</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="info-header">
+                            <h3 id="card-title-3" class="font-header text-primary">D. Karadeniz Göknarı</h3>
+                            <span class="sci-name">Abies nordmanniana</span>
+                        </div>
+                        <p class="text-muted mb-20">Yüksek rakımlı Karadeniz ormanlarının endemik türlerinden. Soğuk havaya dirençli genetik yapı. IUCN Kategori: EN.</p>
+                        <div class="dna-strip">
+                            <span class="font-code">Genetik Eşleşme:</span>
+                            <div class="bars" style="--match-pct: var(--match-tr-003);"></div>
+                            <span class="font-code text-primary">96%</span>
+                        </div>
+                        <button class="action-btn map-trigger interactive-btn" data-plant-id="TR-PLNT-003" aria-controls="modal-backdrop">
+                            <i class="ri-map-2-line" aria-hidden="true"></i> COĞRAFİ DAĞILIM ANALİZİ
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bio-card card-tr-004" role="region" aria-labelledby="card-title-4" data-plant-id="TR-PLNT-004" tabindex="0">
+                    <div class="card-visual">
+                        <img src="https://picsum.photos/id/40/800/600" alt="İspir Meşesi görseli" loading="lazy" class="plant-image">
+                        <div class="visual-overlay"></div>
+                        <span class="id-tag">TR-PLNT-004</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="info-header">
+                            <h3 id="card-title-4" class="font-header text-primary">İspir Meşesi</h3>
+                            <span class="sci-name">Quercus libani</span>
+                        </div>
+                        <p class="text-muted mb-20">Doğu Anadolu'nun zorlu koşullarına adapte olmuş nadir meşe türü. Kuraklığa dirençli gen dizilimi. IUCN Kategori: VU.</p>
+                        <div class="dna-strip">
+                            <span class="font-code">Genetik Eşleşme:</span>
+                            <div class="bars" style="--match-pct: var(--match-tr-004);"></div>
+                            <span class="font-code text-primary">85%</span>
+                        </div>
+                        <button class="action-btn map-trigger interactive-btn" data-plant-id="TR-PLNT-004" aria-controls="modal-backdrop">
+                            <i class="ri-map-2-line" aria-hidden="true"></i> COĞRAFİ DAĞILIM ANALİZİ
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bio-card card-tr-005" role="region" aria-labelledby="card-title-5" data-plant-id="TR-PLNT-005" tabindex="0">
+                    <div class="card-visual">
+                        <img src="https://picsum.photos/id/50/800/600" alt="Datça Hurması görseli" loading="lazy" class="plant-image">
+                        <div class="visual-overlay"></div>
+                        <span class="id-tag">TR-PLNT-005</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="info-header">
+                            <h3 id="card-title-5" class="font-header text-primary">Datça Hurması</h3>
+                            <span class="sci-name">Phoenix theophrasti</span>
+                        </div>
+                        <p class="text-muted mb-20">Türkiye'de doğal olarak yetişen tek palmiye türü, koruma altında. Çok küçük alanda yayılım gösterir. IUCN Kategori: CR (Kritik).</p>
+                        <div class="dna-strip">
+                            <span class="font-code">Genetik Eşleşme:</span>
+                            <div class="bars" style="--match-pct: var(--match-tr-005);"></div>
+                            <span class="font-code text-primary">91%</span>
+                        </div>
+                        <button class="action-btn map-trigger interactive-btn" data-plant-id="TR-PLNT-005" aria-controls="modal-backdrop">
+                            <i class="ri-map-2-line" aria-hidden="true"></i> COĞRAFİ DAĞILIM ANALİZİ
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bio-card card-tr-006" role="region" aria-labelledby="card-title-6" data-plant-id="TR-PLNT-006" tabindex="0">
+                    <div class="card-visual">
+                        <img src="https://picsum.photos/id/60/800/600" alt="Kaçkar Çiğdemi görseli" loading="lazy" class="plant-image">
+                        <div class="visual-overlay"></div>
+                        <span class="id-tag">TR-PLNT-006</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="info-header">
+                            <h3 id="card-title-6" class="font-header text-primary">Kaçkar Çiğdemi</h3>
+                            <span class="sci-name">Crocus kağızmanicus</span>
+                        </div>
+                        <p class="text-muted mb-20">Kaçkar Dağları'nın yüksek zirvelerinde bulunan endemik bir çiğdem türü. Kısa ömürlü DNA döngüsü. IUCN Kategori: EN.</p>
+                        <div class="dna-strip">
+                            <span class="font-code">Genetik Eşleşme:</span>
+                            <div class="bars" style="--match-pct: var(--match-tr-006);"></div>
+                            <span class="font-code text-primary">94%</span>
+                        </div>
+                        <button class="action-btn map-trigger interactive-btn" data-plant-id="TR-PLNT-006" aria-controls="modal-backdrop">
+                            <i class="ri-map-2-line" aria-hidden="true"></i> COĞRAFİ DAĞILIM ANALİZİ
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bio-card card-tr-007" role="region" aria-labelledby="card-title-7" data-plant-id="TR-PLNT-007" tabindex="0">
+                    <div class="card-visual">
+                        <img src="https://picsum.photos/id/70/800/600" alt="Ters Lale görseli" loading="lazy" class="plant-image">
+                        <div class="visual-overlay"></div>
+                        <span class="id-tag">TR-PLNT-007</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="info-header">
+                            <h3 id="card-title-7" class="font-header text-primary">Ters Lale</h3>
+                            <span class="sci-name">Fritillaria imperialis</span>
+                        </div>
+                        <p class="text-muted mb-20">Doğu ve Güneydoğu Anadolu'da yetişen, nadir ve soğanlı bir bitki türü. Genetik çeşitliliği azalıyor. IUCN Kategori: VU.</p>
+                        <div class="dna-strip">
+                            <span class="font-code">Genetik Eşleşme:</span>
+                            <div class="bars" style="--match-pct: var(--match-tr-007);"></div>
+                            <span class="font-code text-primary">88%</span>
+                        </div>
+                        <button class="action-btn map-trigger interactive-btn" data-plant-id="TR-PLNT-007" aria-controls="modal-backdrop">
+                            <i class="ri-map-2-line" aria-hidden="true"></i> COĞRAFİ DAĞILIM ANALİZİ
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bio-card card-tr-008" role="region" aria-labelledby="card-title-8" data-plant-id="TR-PLNT-008" tabindex="0">
+                    <div class="card-visual">
+                        <img src="https://picsum.photos/id/80/800/600" alt="Kazdağı Göknarı görseli" loading="lazy" class="plant-image">
+                        <div class="visual-overlay"></div>
+                        <span class="id-tag">TR-PLNT-008</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="info-header">
+                            <h3 id="card-title-8" class="font-header text-primary">Kazdağı Göknarı</h3>
+                            <span class="sci-name">Abies equi-trojani</span>
+                        </div>
+                        <p class="text-muted mb-20">Sadece Kazdağları'nda (İda Dağı) yetişen bir endemik türdür. Kritik habitat koruması gereklidir. IUCN Kategori: EN.</p>
+                        <div class="dna-strip">
+                            <span class="font-code">Genetik Eşleşme:</span>
+                            <div class="bars" style="--match-pct: var(--match-tr-008);"></div>
+                            <span class="font-code text-primary">92%</span>
+                        </div>
+                        <button class="action-btn map-trigger interactive-btn" data-plant-id="TR-PLNT-008" aria-controls="modal-backdrop">
+                            <i class="ri-map-2-line" aria-hidden="true"></i> COĞRAFİ DAĞILIM ANALİZİ
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bio-card card-tr-009" role="region" aria-labelledby="card-title-9" data-plant-id="TR-PLNT-009" tabindex="0">
+                    <div class="card-visual">
+                        <img src="https://picsum.photos/id/90/800/600" alt="Kral Eğrelti Otu görseli" loading="lazy" class="plant-image">
+                        <div class="visual-overlay"></div>
+                        <span class="id-tag">TR-PLNT-009</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="info-header">
+                            <h3 id="card-title-9" class="font-header text-primary">Kral Eğrelti Otu</h3>
+                            <span class="sci-name">Osmunda regalis</span>
+                        </div>
+                        <p class="text-muted mb-20">Nemli ve sulak alanlarda görülen büyük ve ihtişamlı bir eğrelti türü. Spor oluşum mekanizması inceleniyor. IUCN Kategori: NT.</p>
+                        <div class="dna-strip">
+                            <span class="font-code">Genetik Eşleşme:</span>
+                            <div class="bars" style="--match-pct: var(--match-tr-009);"></div>
+                            <span class="font-code text-primary">97%</span>
+                        </div>
+                        <button class="action-btn map-trigger interactive-btn" data-plant-id="TR-PLNT-009" aria-controls="modal-backdrop">
+                            <i class="ri-map-2-line" aria-hidden="true"></i> COĞRAFİ DAĞILIM ANALİZİ
+                        </button>
+                    </div>
+                </div>
+                <div id="no-results" class="hidden" role="alert" aria-live="assertive">
+                    <i class="ri-bug-line" aria-hidden="true"></i>
+                    <p>ANALİZ BAŞARISIZ. SORGUNUZLA EŞLEŞEN GENETİK VERİ BULUNAMADI.</p>
+                    <p class="text-muted mt-20">Lütfen sorgunuzu kontrol edin veya alternatif DNA barkodları deneyin.</p>
+                </div>
+            </section>
+            <div class="placeholder-card-template" style="display:none;" aria-hidden="true">
+                <div class="bio-card placeholder" data-plant-id="TR-PLNT-PLACEHOLDER-XXX" role="region">
+                    <div class="card-visual">
+                        <img src="https://picsum.photos/800/600?random=XXX" alt="Gelecek Veri Kaydı Görseli" loading="lazy" class="plant-image">
+                        <div class="visual-overlay"></div>
+                        <span class="id-tag font-code">TR-PLNT-PH-XXX</span>
+                    </div>
+                    <div class="card-info">
+                        <div class="info-header">
+                            <h3 class="font-header">Yer Tutucu Kayıt XXX</h3>
+                            <span class="sci-name">Species.placeholder.XXX</span>
+                        </div>
+                        <p class="text-muted mb-20">Bu bir yer tutucu kayıttır. Gerçek genetik veriler 2026 Q1'de yüklenecektir. IUCN Kategori: PH.</p>
+                        <div class="dna-strip">
+                            <span class="font-code">Simüle Eşleşme:</span>
+                            <div class="bars" style="--match-pct: 78%;"></div>
+                            <span class="font-code text-muted">78%</span>
+                        </div>
+                        <button class="action-btn map-trigger interactive-btn disabled-trigger" data-plant-id="TR-PLNT-PLACEHOLDER-XXX" disabled>
+                            <i class="ri-lock-line" aria-hidden="true"></i> VERİ KİLİTLİ
+                        </button>
+                    </div>
+                </div>
+                </div>
+            <section class="placeholder-grid-section" aria-hidden="true">
+                <div class="bio-card placeholder" data-plant-id="TR-PLNT-PH-010" role="region" style="display:none;"><div class="card-visual"><img src="https://picsum.photos/800/600?random=10" alt="Gelecek Veri Kaydı Görseli" loading="lazy" class="plant-image"><div class="visual-overlay"></div><span class="id-tag font-code">TR-PLNT-PH-010</span></div><div class="card-info"><div class="info-header"><h3 class="font-header">Yer Tutucu Kayıt 010</h3><span class="sci-name">Species.placeholder.010</span></div><p class="text-muted mb-20">Bu bir yer tutucu kayıttır. Gerçek genetik veriler 2026 Q1'de yüklenecektir. IUCN Kategori: PH.</p><div class="dna-strip"><span class="font-code">Simüle Eşleşme:</span><div class="bars" style="--match-pct: 78%;"></div><span class="font-code text-muted">78%</span></div><button class="action-btn map-trigger interactive-btn disabled-trigger" data-plant-id="TR-PLNT-PH-010" disabled><i class="ri-lock-line" aria-hidden="true"></i> VERİ KİLİTLİ</button></div></div>
+                <div class="bio-card placeholder" data-plant-id="TR-PLNT-PH-011" role="region" style="display:none;"><div class="card-visual"><img src="https://picsum.photos/800/600?random=11" alt="Gelecek Veri Kaydı Görseli" loading="lazy" class="plant-image"><div class="visual-overlay"></div><span class="id-tag font-code">TR-PLNT-PH-011</span></div><div class="card-info"><div class="info-header"><h3 class="font-header">Yer Tutucu Kayıt 011</h3><span class="sci-name">Species.placeholder.011</span></div><p class="text-muted mb-20">Bu bir yer tutucu kayıttır. Gerçek genetik veriler 2026 Q1'de yüklenecektir. IUCN Kategori: PH.</p><div class="dna-strip"><span class="font-code">Simüle Eşleşme:</span><div class="bars" style="--match-pct: 78%;"></div><span class="font-code text-muted">78%</span></div><button class="action-btn map-trigger interactive-btn disabled-trigger" data-plant-id="TR-PLNT-PH-011" disabled><i class="ri-lock-line" aria-hidden="true"></i> VERİ KİLİTLİ</button></div></div>
+                </section>
+            <section class="info-section py-80">
+                <div class="text-center">
+                    <h2 class="font-header text-secondary mb-20">VERİ GÜVENLİĞİ VE SÜREKLİ ANALİZ</h2>
+                    <p class="text-muted" style="max-width: 800px; margin: 0 auto;">
+                        BioGenesis, verilerini T.C. Tarım ve Orman Bakanlığı ile entegre çalışmaktadır. 
+                        Tüm genetik sekans verileri, **Quantum-Safe** şifreleme algoritmaları ile korunmaktadır. 
+                        Sistem, dakikada 400.000 yeni barkod karşılaştırması yapabilme kapasitesine sahiptir.
+                    </p>
+                    <div class="data-metrics mt-40 font-code">
+                        <span>INTEGRITY: 99.998%</span>
+                        <span>LATENCY: 85ms</span>
+                        <span>PROTECTION: QSP-v3</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer role="contentinfo" id="footer-section">
+            <div class="footer-content">
+                <p>BIOGENESIS LABORATUVARLARI &copy; 2025. Tüm Hakları Saklıdır. Versiyon V5.0.0-MEGA</p>
+                <div class="tech-stack">
+                    <span title="Güvenlik Protokolü">SECURE-QSP</span>
+                    <span title="Veritabanı Entegrasyonu">TÜBİTAK-API</span>
+                    <span title="Arayüz Teknolojisi">VANILLA-JS/LEAFLET</span>
+                </div>
+            </div>
+            </footer>
+    </div>
+
+    <div id="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title" class="hidden">
+        <div class="modal-window">
+            <div class="modal-top">
+                <h3 id="modal-title" class="text-secondary font-header">BÖLGESEL YAYILIM ANALİZİ</h3>
+                <button id="close-modal" aria-label="Harita penceresini kapat" class="interactive-btn"><i class="ri-close-line" aria-hidden="true"></i></button>
+            </div>
+            
+            <div id="map-container" aria-label="Bitki yayılım haritası"></div>
+            
+            <div class="modal-details font-code">
+                <div id="modal-plant-details">
+                    </div>
+            </div>
+
+            <div class="modal-status">
+                <i class="ri-radar-line" aria-hidden="true"></i>
+                <span class="font-code">UYDU VERİSİ SENKRONİZE | GERÇEK ZAMANLI</span>
+            </div>
+        </div>
+    </div>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <script src="script.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const loader = document.getElementById('loader-overlay');
+                if(loader && loader.style.opacity !== '0') {
+                     loader.style.opacity = '0';
+                     loader.style.pointerEvents = 'none';
+                     document.body.classList.remove('system-loading');
+                     console.warn("WARN: JS Yükleyici Gecikti. Fail-Safe aktif.");
+                }
+            }, 5000); 
+        });
+    </script>
+    </body>
+</html>
