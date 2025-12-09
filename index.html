@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="tr" data-system-mode="dark-biotech" data-version="V5.0.0-MEGA" data-agent-status="ONLINE" data-quantum-lock="ENABLED">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>BioGenesis Platform V5.0 | Türkiye Endemik Türler Genetik & Coğrafi Analiz Merkezi</title>
+    
+    <meta name="description" content="Yapay Zeka destekli Biyoinformatik Arayüzü. Kritik Tehlikedeki (CR) endemik türlerden Asgari Endişe (LC) altındaki türlere kadar, Türkiye florasının genetik verilerini anlık olarak izleyin ve coğrafi yayılımlarını hiper-gerçekçi haritalar üzerinde analiz edin. Kuantum Sekanslama verileriyle desteklenmiştir.">
+    <meta name="keywords" content="DNA, Biyoinformatik, Endemik Türler, Türkiye Florası, Genetik Veritabanı, Bio-Tech, Kritik Türler, IUCN Red List, Quantum Sekanslama, Coğrafi Yayılım, V5.0, Mega-Veri Analizi">
+    <meta name="author" content="BioGenesis Labs Quantum-Compute Unit - Team 7 Delta">
+    
+    <meta property="og:title" content="BioGenesis V5.0 | Kritik Genetik Analiz & Haritalama">
+    <meta property="og:description" content="AI tabanlı Biyo-Teknoloji Sekanslama ve Yayılım İzleme Platformu.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.biogenesis-platform.com/v5/mega-edition">
+    <link rel="icon" type="image/png" href="/assets/favicon-bio.png">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfBIH2jQ5IDD3990O84w3LUpqqT4uFz0=" crossorigin=""/>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet"/>
+    <link rel="preload" href="/fonts/code-mono.woff2" as="font" type="font/woff2" crossorigin>
+</head>
+<body class="system-loading">
+
+    <div id="loader-overlay" class="loader-overlay" aria-label="Sistem Yükleniyor">
+        <div class="loader-content">
+            <div class="loader-ring"></div>
+            <div class="loader-text font-code">
+                <span id="loader-status">Kuantum Bağlantısı Kuruluyor...</span>
+                <span class="version-tag">V5.0.0</span>
+            </div>
+        </div>
+        <div id="debug-console" class="debug-console">
+            <p class="font-code log-line initial-log">>>> BioGenesis Core Engine [INITIALIZING]...</p>
+        </div>
+    </div>
+    
+    <div id="app-container" class="app-container">
+        
+        <header id="app-header" class="app-header">
+            <div class="header-logo-section">
+                <i class="ri-dna-line logo-icon" aria-hidden="true"></i>
+                <span class="logo-text">BioGenesis <span class="v-tag">V5.0</span></span>
+            </div>
+            
+            <nav id="top-nav-primary" class="top-nav-primary" aria-label="Ana Sistem Navigasyonu">
+                <a href="#dashboard" class="nav-item active" aria-current="page"><i class="ri-dashboard-line"></i> Dashboard</a>
+                <a href="#genetik" class="nav-item"><i class="ri-fingerprint-line"></i> Genetik Analiz</a>
+                <a href="#yayilim" class="nav-item"><i class="ri-global-line"></i> Coğrafi Yayılım</a>
+                <a href="#rapor" class="nav-item"><i class="ri-file-chart-line"></i> Kapsamlı Raporlar</a>
+                <div class="nav-indicator"></div>
+            </nav>
+
+            <div class="header-status-section">
+                <div class="system-metric-tile font-code" id="time-display" title="Sistem Saati">00:00:00</div>
+                <div class="system-metric-tile font-code" id="sync-status" title="Son Veri Senkronizasyon Durumu">
+                    <i class="ri-radar-line"></i> <span class="sync-text">SENKRONİZE</span>
+                </div>
+                <button id="settings-btn" class="interactive-btn" aria-label="Sistem Ayarları"><i class="ri-settings-4-line"></i></button>
+            </div>
+        </header>
+        
+        <main id="main-content-wrapper" class="main-content-wrapper">
+            
+            <aside id="sidebar-panel" class="sidebar-panel" aria-label="Veritabanı Erişim ve Sistem Kontrol Paneli">
+                <div class="sidebar-nav-group">
+                    <h4 class="group-title">VERİ ERİŞİM</h4>
+                    <ul class="sidebar-nav-list font-code">
+                        <li class="nav-item active" data-nav-target="endemik-turler"><i class="ri-plant-line"></i> Endemik Türler <span class="count-tag" id="endemik-count">1904</span></li>
+                        <li class="nav-item" data-nav-target="kritik-tehlike"><i class="ri-alert-line"></i> Kritik Tehlikedeki (CR) <span class="count-tag red" id="critical-count">47</span></li>
+                        <li class="nav-item" data-nav-target="yeni-sekanslar"><i class="ri-refresh-line"></i> Yeni Sekanslar <span class="count-tag blue" id="new-seq-count">21</span></li>
+                        <li class="nav-item" data-nav-target="proje-gecmisi"><i class="ri-history-line"></i> Proje Geçmişi</li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-nav-group">
+                    <h4 class="group-title">MODÜLLER</h4>
+                    <ul class="sidebar-nav-list font-code">
+                        <li class="nav-item" data-nav-target="quantum-seq"><i class="ri-robot-line"></i> Kuantum Sekanslama Arayüzü</li>
+                        <li class="nav-item" data-nav-target="bio-simulasyon"><i class="ri-flask-line"></i> Biyo-Simülasyon Modeli</li>
+                        <li class="nav-item" data-nav-target="api-doc"><i class="ri-code-line"></i> API Dokümantasyonu</li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-system-log">
+                    <h4 class="group-title">SİSTEM LOG (5Hz)</h4>
+                    <div id="system-log-feed" class="system-log-feed font-code" aria-live="polite">
+                        <p class="log-entry log-success">08:00:00 | CORE | Sistem Bağlantısı: Tamamlandı.</p>
+                        <p class="log-entry log-info">08:00:01 | DATA | Toplam Tür Verisi Yüklendi (1904).</p>
+                    </div>
+                </div>
+            </aside>
+<section id="data-display-area" class="data-display-area" role="region" aria-label="Ana Veri Görüntüleme ve Analiz Alanı">
+                
+                <div class="search-filter-bar">
+                    <form id="search-form" class="search-form" role="search" aria-label="Veritabanında Tür Arama">
+                        <i class="ri-search-line search-icon" aria-hidden="true"></i>
+                        <input type="text" id="search-input" class="search-input font-code" 
+                               placeholder="Endemik Tür ID (BG-XXXX) veya Latince İsim ile arama yapın..." 
+                               autocomplete="off" aria-label="Arama Sorgusu">
+                        <button type="submit" class="search-btn interactive-btn" aria-label="Aramayı Başlat"><i class="ri-arrow-right-line"></i></button>
+                    </form>
+                    
+                    <div class="filter-controls">
+                        <span class="filter-label">IUCN Kategori:</span>
+                        <select id="iucn-filter" class="filter-select font-code" aria-label="IUCN Kategori Filtresi">
+                            <option value="ALL">Tümü (1904)</option>
+                            <option value="CR">Kritik Tehlikedeki (CR)</option>
+                            <option value="EN">Tehlikedeki (EN)</option>
+                            <option value="VU">Hassas (VU)</option>
+                            <option value="NT">Neredeyse Tehlikedeki (NT)</option>
+                            <option value="LC">Asgari Endişe (LC)</option>
+                        </select>
+                        <button id="reset-filter-btn" class="interactive-btn-secondary" aria-label="Filtreleri Sıfırla"><i class="ri-refresh-line"></i></button>
+                    </div>
+                </div>
+
+                <div class="summary-cards-group">
+                    
+                    <div class="summary-card" data-card-id="total-species">
+                        <div class="card-icon-container bg-primary-light"><i class="ri-plant-line"></i></div>
+                        <div class="card-content">
+                            <p class="card-title">Toplam Kayıtlı Tür</p>
+                            <h2 class="card-value font-code" id="card-total-species">1904</h2>
+                        </div>
+                        <p class="card-detail-text">Türkiye Endemik Florası</p>
+                    </div>
+                    
+                    <div class="summary-card critical" data-card-id="critical-threat">
+                        <div class="card-icon-container bg-red-light"><i class="ri-alert-line"></i></div>
+                        <div class="card-content">
+                            <p class="card-title">Kritik Tehlikedeki (CR)</p>
+                            <h2 class="card-value font-code" id="card-critical-threat">47</h2>
+                        </div>
+                        <p class="card-detail-text">Acil Koruma Önceliği</p>
+                    </div>
+
+                    <div class="summary-card" data-card-id="genome-size">
+                        <div class="card-icon-container bg-secondary-light"><i class="ri-dna-line"></i></div>
+                        <div class="card-content">
+                            <p class="card-title">Ort. Genom Boyutu</p>
+                            <h2 class="card-value font-code" id="card-genome-size">487.3 <span class="unit">Mbp</span></h2>
+                        </div>
+                        <p class="card-detail-text">Sekanslama Ortalaması</p>
+                    </div>
+
+                    <div class="summary-card" data-card-id="new-sequences">
+                        <div class="card-icon-container bg-blue-light"><i class="ri-refresh-line"></i></div>
+                        <div class="card-content">
+                            <p class="card-title">Yeni Eklenen Sekans</p>
+                            <h2 class="card-value font-code" id="card-new-sequences">21 <span class="unit">Adet</span></h2>
+                        </div>
+                        <p class="card-detail-text">Son 24 Saatlik Veri Akışı</p>
+                    </div>
+                </div>
+
+                <div class="results-container">
+                    <h3 class="results-title">TÜM ENDEMİK TÜR KAYITLARI <span id="results-count">(1904)</span></h3>
+                    
+                    <div id="error-404s-message" class="error-message-404s" style="display: none;">
+                        <i class="ri-bug-line"></i>
+                        <h4>404S | SUNUCU/BAĞLANTI HATASI</h4>
+                        <p class="font-code">İstenen veri kaynağına ulaşılamadı. Sunucu zaman aşımı veya hatalı veri yapısı algılandı. Lütfen arama sorgunuzu kontrol edin veya filtreleri sıfırlayın.</p>
+                        <button class="interactive-btn-secondary" onclick="window.location.reload()"><i class="ri-restart-line"></i> Sistemi Yeniden Başlat</button>
+                    </div>
+                    
+                    <div id="plant-list-grid" class="plant-list-grid" role="list">
+                        
+                        <div class="plant-card" data-plant-id="BG-0001" data-iucn="CR" data-latitude="39.8" data-longitude="32.8" role="listitem">
+                            <div class="card-header">
+                                <span class="plant-id font-code">BG-0001</span>
+                                <span class="iucn-tag cr">CR</span>
+                            </div>
+                            <h4 class="plant-name-lat">Astragalus Halicarnassicus</h4>
+                            <p class="plant-name-tr">Bodrum Geveni</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Muğla</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: A+</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0001" aria-label="Astragalus Halicarnassicus Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+
+                        <div class="plant-card" data-plant-id="BG-0002" data-iucn="EN" data-latitude="40.2" data-longitude="30.6" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0002</span><span class="iucn-tag en">EN</span></div>
+                            <h4 class="plant-name-lat">Iris Gatesii</h4>
+                            <p class="plant-name-tr">Gates Süseni</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Bursa, Balıkesir</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: B+</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0002" aria-label="Iris Gatesii Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+                        
+                        <div class="plant-card" data-plant-id="BG-0003" data-iucn="VU" data-latitude="37.0" data-longitude="35.3" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0003</span><span class="iucn-tag vu">VU</span></div>
+                            <h4 class="plant-name-lat">Cyclamen mirabile</h4>
+                            <p class="plant-name-tr">Harika Siklamen</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Adana</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: A</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0003" aria-label="Cyclamen mirabile Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+
+                        <div class="plant-card" data-plant-id="BG-0004" data-iucn="LC" data-latitude="36.5" data-longitude="30.7" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0004</span><span class="iucn-tag lc">LC</span></div>
+                            <h4 class="plant-name-lat">Tulipa Sprengeri</h4>
+                            <p class="plant-name-tr">Sprenger Lalesi</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Antalya</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: B-</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0004" aria-label="Tulipa Sprengeri Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+                        
+                        <div class="plant-card" data-plant-id="BG-0005" data-iucn="CR" data-latitude="41.0" data-longitude="29.0" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0005</span><span class="iucn-tag cr">CR</span></div>
+                            <h4 class="plant-name-lat">Eryngium istanbulense</h4>
+                            <p class="plant-name-tr">İstanbul Boğazı Çakır Dikeni</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: İstanbul</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: A+</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0005" aria-label="Eryngium istanbulense Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+
+                        <div class="plant-card" data-plant-id="BG-0006" data-iucn="EN" data-latitude="37.8" data-longitude="27.0" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0006</span><span class="iucn-tag en">EN</span></div>
+                            <h4 class="plant-name-lat">Crocus baytopiorum</h4>
+                            <p class="plant-name-tr">Baytop Çiğdemi</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Aydın</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: B</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0006" aria-label="Crocus baytopiorum Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+
+                        <div class="plant-card" data-plant-id="BG-0007" data-iucn="VU" data-latitude="39.2" data-longitude="34.0" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0007</span><span class="iucn-tag vu">VU</span></div>
+                            <h4 class="plant-name-lat">Hypericum olympicum</h4>
+                            <p class="plant-name-tr">Ulu Dağ Kantaronu</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Kayseri, Nevşehir</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: A-</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0007" aria-label="Hypericum olympicum Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+
+                        <div class="plant-card" data-plant-id="BG-0008" data-iucn="NT" data-latitude="40.8" data-longitude="39.8" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0008</span><span class="iucn-tag nt">NT</span></div>
+                            <h4 class="plant-name-lat">Fritillaria pontica</h4>
+                            <p class="plant-name-tr">Karadeniz Çiçeği</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Trabzon, Rize</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: C+</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0008" aria-label="Fritillaria pontica Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+
+                        <div class="plant-card" data-plant-id="BG-0009" data-iucn="LC" data-latitude="38.4" data-longitude="27.1" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0009</span><span class="iucn-tag lc">LC</span></div>
+                            <h4 class="plant-name-lat">Anemone coronaria</h4>
+                            <p class="plant-name-tr">Taç Anemonu</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: İzmir, Manisa</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: B+</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0009" aria-label="Anemone coronaria Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+
+                        <div class="plant-card" data-plant-id="BG-0010" data-iucn="CR" data-latitude="38.7" data-longitude="43.2" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0010</span><span class="iucn-tag cr">CR</span></div>
+                            <h4 class="plant-name-lat">Centaurea tchihatcheffii</h4>
+                            <p class="plant-name-tr">Yanık Üçgül</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Van</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: A+</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0010" aria-label="Centaurea tchihatcheffii Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+                        
+                        <div class="plant-card" data-plant-id="BG-0011" data-iucn="EN" data-latitude="37.4" data-longitude="34.8" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0011</span><span class="iucn-tag en">EN</span></div>
+                            <h4 class="plant-name-lat">Galanthus plicatus subsp. byzantinus</h4>
+                            <p class="plant-name-tr">İstanbul Kardeleni</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Hatay</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: A</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0011" aria-label="Galanthus plicatus subsp. byzantinus Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+                        
+                        <div class="plant-card" data-plant-id="BG-0012" data-iucn="VU" data-latitude="39.0" data-longitude="30.0" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0012</span><span class="iucn-tag vu">VU</span></div>
+                            <h4 class="plant-name-lat">Papaver tauricolum</h4>
+                            <p class="plant-name-tr">Toros Gelinciği</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Afyon</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: B-</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0012" aria-label="Papaver tauricolum Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+
+                        <div class="plant-card" data-plant-id="BG-0013" data-iucn="NT" data-latitude="37.0" data-longitude="40.5" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0013</span><span class="iucn-tag nt">NT</span></div>
+                            <h4 class="plant-name-lat">Ornithogalum nutans</h4>
+                            <p class="plant-name-tr">Başaklı Ak Lale</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Şanlıurfa</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: C+</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0013" aria-label="Ornithogalum nutans Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+
+                        <div class="plant-card" data-plant-id="BG-0014" data-iucn="LC" data-latitude="40.0" data-longitude="36.0" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0014</span><span class="iucn-tag lc">LC</span></div>
+                            <h4 class="plant-name-lat">Muscari armeniacum</h4>
+                            <p class="plant-name-tr">Ermeni Sümbülü</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Sivas, Tokat</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: B+</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0014" aria-label="Muscari armeniacum Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+
+                        <div class="plant-card" data-plant-id="BG-0015" data-iucn="CR" data-latitude="39.8" data-longitude="32.8" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0015</span><span class="iucn-tag cr">CR</span></div>
+                            <h4 class="plant-name-lat">Anacamptis morio subsp. caucasica</h4>
+                            <p class="plant-name-tr">Kafkas Orkidesi</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Ankara, Çankırı</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: A+</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0015" aria-label="Anacamptis morio subsp. caucasica Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+
+                        <div class="plant-card" data-plant-id="BG-0016" data-iucn="EN" data-latitude="36.8" data-longitude="28.2" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0016</span><span class="iucn-tag en">EN</span></div>
+                            <h4 class="plant-name-lat">Campanula tomentosa</h4>
+                            <p class="plant-name-tr">Yünlü Çan Çiçeği</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Denizli</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: A-</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0016" aria-label="Campanula tomentosa Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+
+                        <div class="plant-card" data-plant-id="BG-0017" data-iucn="VU" data-latitude="38.0" data-longitude="42.0" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0017</span><span class="iucn-tag vu">VU</span></div>
+                            <h4 class="plant-name-lat">Alyssum murale</h4>
+                            <p class="plant-name-tr">Duvar Kudret Nergisi</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Bitlis, Muş</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: B+</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0017" aria-label="Alyssum murale Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+
+                        <div class="plant-card" data-plant-id="BG-0018" data-iucn="NT" data-latitude="41.5" data-longitude="36.1" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0018</span><span class="iucn-tag nt">NT</span></div>
+                            <h4 class="plant-name-lat">Hesperis matronalis subsp. adzharica</h4>
+                            <p class="plant-name-tr">Kafkas Akşam Sefası</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Samsun, Ordu</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: C</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0018" aria-label="Hesperis matronalis subsp. adzharica Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+                        
+                        <div class="plant-card" data-plant-id="BG-0019" data-iucn="LC" data-latitude="38.3" data-longitude="38.0" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0019</span><span class="iucn-tag lc">LC</span></div>
+                            <h4 class="plant-name-lat">Verbascum thapsus</h4>
+                            <p class="plant-name-tr">Sığır Kuyruğu</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Malatya, Elazığ</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: B-</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0019" aria-label="Verbascum thapsus Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+                        
+                        <div class="plant-card" data-plant-id="BG-0020" data-iucn="CR" data-latitude="36.2" data-longitude="36.0" role="listitem">
+                            <div class="card-header"><span class="plant-id font-code">BG-0020</span><span class="iucn-tag cr">CR</span></div>
+                            <h4 class="plant-name-lat">Sideritis galatica</h4>
+                            <p class="plant-name-tr">Galatya Dağ Çayı</p>
+                            <div class="card-details">
+                                <span class="detail-item"><i class="ri-community-line"></i> Yayılım: Kilis, Gaziantep</span>
+                                <span class="detail-item"><i class="ri-dna-line"></i> Seq.Kalite: A+</span>
+                            </div>
+                            <button class="map-view-btn interactive-btn" data-plant-id="BG-0020" aria-label="Sideritis galatica Coğrafi Yayılım Haritasını Görüntüle">
+                                <i class="ri-global-line"></i> Coğrafi Dağılım Merkezi
+                            </button>
+                        </div>
+
+                        </div>
+
+                    <div class="pagination-area">
+                        <span id="pagination-info" class="font-code">Sayfa 1 / 10 | Gösterilen: 1904 Kayıt</span>
+                        <div class="pagination-controls">
+                            <button id="prev-page-btn" class="interactive-btn-secondary" disabled><i class="ri-arrow-left-line"></i> Önceki</button>
+                            <button id="next-page-btn" class="interactive-btn-secondary">Sonraki <i class="ri-arrow-right-line"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+<div id="map-modal" class="map-modal" aria-modal="true" role="dialog" aria-labelledby="modal-title" aria-hidden="true" style="display: none;">
+                <div class="modal-content-wrapper">
+                    <div class="modal-header-section">
+                        <h2 id="modal-title" class="modal-title">COĞRAFİ YAYILIM MERKEZİ <span id="modal-plant-id" class="font-code">[BG-XXXX]</span></h2>
+                        <button id="close-modal" aria-label="Harita penceresini kapat" class="interactive-btn"><i class="ri-close-line" aria-hidden="true"></i></button>
+                    </div>
+                    
+                    <div id="map-container" aria-label="Bitki yayılım haritası" class="map-container">
+                        </div>
+                    
+                    <div class="modal-details-container">
+                        
+                        <div class="modal-details-box font-code" id="modal-plant-details">
+                            <h4 class="details-title"><i class="ri-information-line"></i> TÜR VE KONUM VERİLERİ</h4>
+                            <p><strong>Latince İsim:</strong> <span id="detail-lat-name"></span></p>
+                            <p><strong>Yayılım Bölgesi:</strong> <span id="detail-province"></span></p>
+                            <p><strong>IUCN Kategori:</strong> <span id="detail-iucn"></span></p>
+                            <p><strong>Koordinatlar:</strong> LAT: <span id="detail-lat"></span>, LON: <span id="detail-lon"></span></p>
+                            <p><strong>Genetik ID:</strong> <span id="detail-gen-id"></span></p>
+                        </div>
+
+                         <div class="modal-details-box font-code">
+                            <h4 class="details-title"><i class="ri-dna-line"></i> KUANTUM SEKANS ANALİZ ÖZETİ</h4>
+                            <p><strong>Genom Boyutu:</strong> <span id="detail-genome-size">520 Mbp</span></p>
+                            <p><strong>Mevcut Haplotip Sayısı:</strong> <span id="detail-haplotype-count">4</span></p>
+                            <p><strong>Tehlike Skoru (AI):</strong> <span id="detail-threat-score">94.5%</span></p>
+                            <p><strong>Son Sekans Tarihi:</strong> <span id="detail-seq-date">2025-12-09</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="modal-status">
+                        <i class="ri-radar-line" aria-hidden="true"></i>
+                        <span class="font-code">UYDU VERİSİ SENKRONİZE | GERÇEK ZAMANLI AKIŞ</span>
+                    </div>
+                </div>
+            </div>
+
+            <footer id="app-footer" class="app-footer">
+                <div class="footer-status-bar">
+                    <span class="status-item font-code">SİSTEM DURUMU: <span class="status-ok">OPERASYONEL</span></span>
+                    <span class="status-item font-code">API Latency: <span id="api-latency">24ms</span></span>
+                    <span class="status-item font-code">Database Health: <span class="status-ok">100%</span></span>
+                    <span class="status-item font-code">CPU Yükü: <span id="cpu-load">12%</span></span>
+                </div>
+                <div class="command-line-interface">
+                    <span class="cli-prefix font-code">BG_CORE@V5.0 ></span>
+                    <input type="text" id="cli-input" class="cli-input font-code" placeholder="Komut girin (ör: help, run_seq BG-0001)...">
+                    <button id="cli-execute-btn" class="interactive-btn-secondary" aria-label="Komutu Çalıştır"><i class="ri-send-plane-line"></i></button>
+                </div>
+            </footer>
+
+        </main>
+        
+    </div> 
+    
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" 
+            integrity="sha256-p4NxAoJBhIINfBIH2jQ5IDD3990O84w3LUpqqT4uFz0=" 
+            crossorigin=""></script>
+    <script src="https://unpkg.com/scrollreveal"></script>
+    
+    <script src="script.js"></script>
+
+    <script>
+        // Sayfa yüklendiğinde yükleyiciyi gizler ve ana içeriği gösterir.
+        document.addEventListener('DOMContentLoaded', function() {
+            // Yükleme animasyonunu daha akıcı hale getirmek için 2.5 saniye bekletme
+            const MIN_LOAD_TIME = 2500; 
+            const startTime = Date.now();
+
+            const finalizeLoad = () => {
+                const elapsedTime = Date.now() - startTime;
+                const remainingTime = Math.max(0, MIN_LOAD_TIME - elapsedTime);
+
+                setTimeout(() => {
+                    const loader = document.getElementById('loader-overlay');
+                    if(loader) {
+                         // Konsol mesajını güncelle
+                        const debugConsole = document.getElementById('debug-console');
+                        const statusLog = document.createElement('p');
+                        statusLog.className = 'font-code log-line final-log';
+                        statusLog.innerHTML = `>>> CORE | Sistem Hazır. Çalışma Süresi: ${(elapsedTime + remainingTime) / 1000}s.`;
+                        debugConsole.appendChild(statusLog);
+                         
+                         // Yükleyiciyi gizle
+                         loader.style.opacity = '0';
+                         document.body.classList.remove('system-loading');
+                         
+                         // JS'de pointer-events'i kaldırarak tıklamayı etkinleştirir
+                         setTimeout(() => {
+                             loader.style.pointerEvents = 'none';
+                         }, 500); // CSS geçiş süresi kadar bekler
+                    }
+                }, remainingTime);
+            };
+
+            // Simülasyon loglarını ve zamanı günceller
+            let logIndex = 0;
+            const logMessages = [
+                'CORE | Yapay Zeka Modülü yükleniyor...',
+                'DATA | Kritik Tehlikedeki Türler (CR) verileri önbelleğe alınıyor...',
+                'MAPS | Leaflet API ve Uydu Katmanları hazırlanıyor...',
+                'GENOMICS | Kuantum Sekans verileri doğrulanıyor...',
+                'UI | Arayüz bileşenleri render ediliyor (V5.0)...',
+                'SYSTEM | Güvenlik protokolleri aktif ediliyor...',
+                'FINAL | Bağlantı stabilizasyonu sağlanıyor...'
+            ];
+            
+            const debugConsole = document.getElementById('debug-console');
+            const loaderStatus = document.getElementById('loader-status');
+
+            const updateLoader = () => {
+                if(logIndex < logMessages.length) {
+                    const message = logMessages[logIndex];
+                    
+                    // Konsol logu ekle
+                    const logEntry = document.createElement('p');
+                    logEntry.className = `font-code log-line dynamic-log log-${logIndex % 2 === 0 ? 'info' : 'success'}`;
+                    logEntry.textContent = `>>> ${message}`;
+                    debugConsole.appendChild(logEntry);
+                    debugConsole.scrollTop = debugConsole.scrollHeight; // Kaydırmayı sona çek
+
+                    // Durum metnini güncelle
+                    loaderStatus.textContent = message.split('|')[1].trim();
+                    logIndex++;
+                    
+                    // Her log satırı için rastgele bir süre bekle (satır sayısını artırır)
+                    setTimeout(updateLoader, Math.random() * 500 + 300); 
+                } else {
+                    finalizeLoad();
+                }
+            };
+            
+            // İlk çağrıyı başlat
+            setTimeout(updateLoader, 500); 
+        });
+    </script>
+</body>
+</html>	
